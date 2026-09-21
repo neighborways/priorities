@@ -90,6 +90,10 @@ h1 {
 
 </div>
 
+<button onclick="resetData()" style="margin-bottom:20px; padding:10px;">
+  Reset Results
+</button>
+
 <!-- Firebase v8 -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -109,6 +113,22 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
+
+function resetData() {
+  if (!confirm("Are you sure you want to reset all responses?")) return;
+
+  db.collection("responses").get().then(snapshot => {
+    const batch = db.batch();
+
+    snapshot.forEach(doc => {
+      batch.delete(doc.ref);
+    });
+
+    batch.commit().then(() => {
+      alert("Results reset to 0");
+    });
+  });
+}
 
 // LIVE UPDATE
 db.collection("responses").onSnapshot(snapshot => {
